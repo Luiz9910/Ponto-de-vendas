@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 @Controller
@@ -17,7 +18,7 @@ public class UseController {
     private UserRepository userRepository;
 
     @GetMapping
-    public ResponseEntity getAll() {
+    public ResponseEntity<List<User>> getAll() {
         return new ResponseEntity<>(userRepository.findAll(), HttpStatus.OK);
     }
 

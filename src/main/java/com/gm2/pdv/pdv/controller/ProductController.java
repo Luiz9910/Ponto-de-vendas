@@ -27,7 +27,7 @@ public class ProductController {
     }
 
     @PutMapping
-    public ResponseEntity update(@PathVariable Product product) {
+    public ResponseEntity update(@RequestBody Product product) {
         try {
             return new ResponseEntity<>(productRepository.save(product), HttpStatus.OK);
         } catch (Exception error) {

@@ -15,9 +15,6 @@ public class ItemSale {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private Long quantity;
-
     @ManyToOne
     @JoinColumn(name = "sale_id", nullable = false)
     private Sale sale;
@@ -25,4 +22,8 @@ public class ItemSale {
     @ManyToOne
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
+
+    @Column(nullable = false)
+    private long quantity;
+
 }

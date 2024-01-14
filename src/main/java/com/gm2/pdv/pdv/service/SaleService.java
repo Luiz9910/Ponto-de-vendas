@@ -1,7 +1,12 @@
 package com.gm2.pdv.pdv.service;
 
 import com.gm2.pdv.pdv.dto.ProductDTO;
+import com.gm2.pdv.pdv.dto.ProductinfoDTO;
 import com.gm2.pdv.pdv.dto.SaleDTO;
+import com.gm2.pdv.pdv.dto.SaleinfoDTO;
+import com.gm2.pdv.pdv.exceptions.InvalidOperationInvalidException;
+import com.gm2.pdv.pdv.exceptions.NoItemException;
+import com.gm2.pdv.pdv.exceptions.NotFoundUserException;
 import com.gm2.pdv.pdv.model.ItemSale;
 import com.gm2.pdv.pdv.model.Product;
 import com.gm2.pdv.pdv.model.Sale;
@@ -15,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,9 +33,21 @@ public class SaleService {
     private final SaleRepository saleRepository;
     private final ItemSaleRepository itemSaleRepository;
 
+    public List<SaleinfoDTO> findAll() {
+        return saleRepository.findAll().stream().map(this::getSaleInfo).collect(Collectors.toList());
+    }
+
+    public SaleinfoDTO getById(long id) {
+        Sale sale = saleRepository.findById(id)
+                .orElseThrow(() -> new NoItemException("Venda não encontrada"));
+
+        return getSaleInfo(sale);
+    }
+
     @Transactional
-    public long save(SaleDTO sale) {
-        User user = userRepository.findById(sale.getUserid()).get();
+    public long save(SaleDTO sale) throws Exception {
+        User user = userRepository.findById(sale.getUserid())
+                .orElseThrow(() -> new NotFoundUserException("Usuário não encontrado"));
 
         Sale newSale = new Sale();
         newSale.setUser(user);
@@ -49,13 +67,46 @@ public class SaleService {
         }
     }
 
-    private List<ItemSale> getItemSale(List<ProductDTO> products) {
+    private SaleinfoDTO getSaleInfo(Sale sale) {
+        SaleinfoDTO saleinfoDTO = new SaleinfoDTO();
+        saleinfoDTO.setUser(sale.getUser().getName());
+        saleinfoDTO.setDate(sale.getDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+        saleinfoDTO.setProducts(getProductInFor(sale.getItems()));
+
+        return saleinfoDTO;
+    }
+
+    public List<ProductinfoDTO> getProductInFor(List<ItemSale> items) {
+        return items.stream().map(item -> {
+            ProductinfoDTO productinfoDTO = new ProductinfoDTO();
+
+            productinfoDTO.setId(item.getId());
+            productinfoDTO.setDescription(item.getProduct().getDescription());
+            productinfoDTO.setQuantity((int) item.getQuantity());
+
+            return productinfoDTO;
+        }).collect(Collectors.toList());
+    }
+
+    private List<ItemSale> getItemSale(List<ProductDTO> products) throws Exception {
         return products.stream().map(item -> {
             Product product = productRepository.getReferenceById(item.getProductid());
 
             ItemSale itemSale = new ItemSale();
             itemSale.setProduct(product);
             itemSale.setQuantity(item.getQuantity());
+
+            if (item.getQuantity() == 0) {
+                throw new NoItemException("Valores considerados para venda é a partir de 1");
+            } else if (product.getQuantity() == 0) {
+                throw new NoItemException("Produto sem estoque");
+            } else if (product.getQuantity() < item.getQuantity()) {
+                throw new InvalidOperationInvalidException("A quantidade de itens da venda (" + item.getQuantity() + ") é maior que a quantidade dísponivel em estoque (" + product.getQuantity() + ")");
+            }
+
+            int total = product.getQuantity() - item.getQuantity();
+            product.setQuantity(total);
+            productRepository.save(product);
 
             return itemSale;
         }).collect(Collectors.toList());

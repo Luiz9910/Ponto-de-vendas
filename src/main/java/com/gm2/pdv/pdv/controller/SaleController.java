@@ -30,7 +30,7 @@ public class SaleController {
     public ResponseEntity getById(@PathVariable long id) {
         try {
             return new ResponseEntity<>(saleService.getById(id), HttpStatus.OK);
-        } catch (NoItemException error) {
+        } catch (NoItemException | InvalidOperationInvalidException error) {
             return new ResponseEntity<>(new ResponseDTO(error.getMessage()), HttpStatus.NOT_FOUND);
         } catch (Exception error) {
             return new ResponseEntity<>(new ResponseDTO(error.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);

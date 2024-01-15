@@ -15,5 +15,5 @@ public class SaleDTO {
     @NotNull
     private long userid;
 
-    private List<ProductDTO> items;
+    private List<ProductSaleDTO> items;
 }

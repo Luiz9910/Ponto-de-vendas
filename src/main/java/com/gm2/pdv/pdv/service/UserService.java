@@ -4,6 +4,7 @@ import com.gm2.pdv.pdv.dto.UserDTO;
 import com.gm2.pdv.pdv.exceptions.NotFoundUserException;
 import com.gm2.pdv.pdv.model.User;
 import com.gm2.pdv.pdv.repository.UserRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +17,7 @@ public class UserService {
 
     @Autowired
     private UserRepository userRepository;
+    private ModelMapper mapper = new ModelMapper();
 
     public List<UserDTO> getAllUser() {
         return userRepository.findAll().stream().map(user -> {
@@ -33,19 +35,23 @@ public class UserService {
         return new UserDTO(user.getId(), user.getName(), user.isEnabled());
     }
 
-    public UserDTO save(User user) {
-        userRepository.save(user);
-        return new UserDTO(user.getId(), user.getName(), user.isEnabled());
+    public UserDTO save(UserDTO user) {
+        User userToSave = mapper.map(user, User.class);
+
+        userRepository.save(userToSave);
+        return new UserDTO(userToSave.getId(), userToSave.getName(), userToSave.isEnabled());
     }
 
-    public UserDTO update(User user) {
+    public UserDTO update(UserDTO user) {
+        User userToUpdate = mapper.map(user, User.class);
+
         Optional<User> userToEdit = userRepository.findById(user.getId());
         if (!userToEdit.isPresent()) {
             throw new NotFoundUserException("Usuário não encontrado");
         }
 
-        userRepository.save(user);
-        return new UserDTO(user.getId(), user.getName(), user.isEnabled());
+        userRepository.save(userToUpdate);
+        return new UserDTO(userToUpdate.getId(), userToUpdate.getName(), userToUpdate.isEnabled());
     }
 
 

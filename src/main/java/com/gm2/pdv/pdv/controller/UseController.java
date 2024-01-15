@@ -5,6 +5,7 @@ import com.gm2.pdv.pdv.dto.UserDTO;
 import com.gm2.pdv.pdv.exceptions.NotFoundUserException;
 import com.gm2.pdv.pdv.model.User;
 import com.gm2.pdv.pdv.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
@@ -27,7 +28,7 @@ public class UseController {
     }
 
     @PostMapping
-    public ResponseEntity create(@RequestBody User user) {
+    public ResponseEntity create(@Valid @RequestBody UserDTO user) {
         try {
             return new ResponseEntity<>(userService.save(user), HttpStatus.CREATED);
         } catch (Exception error){
@@ -36,8 +37,9 @@ public class UseController {
     }
 
     @PutMapping
-    public ResponseEntity update(@RequestBody User user) {
+    public ResponseEntity update(@Valid @RequestBody UserDTO user) {
         try {
+
             return new ResponseEntity<>(userService.update(user), HttpStatus.OK);
         } catch (NotFoundUserException error) {
             return new ResponseEntity<>(new ResponseDTO(error.getMessage()), HttpStatus.NOT_FOUND);
@@ -53,7 +55,7 @@ public class UseController {
             return new ResponseEntity<>(new ResponseDTO("Usuário removido com sucesso"), HttpStatus.OK);
         } catch (NotFoundUserException error) {
             return new ResponseEntity<>(new ResponseDTO("Usuário nao encotrado"), HttpStatus.NOT_FOUND);
-        }catch (Exception error) {
+        }   catch (Exception error) {
             return new ResponseEntity<>(new ResponseDTO(error.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

@@ -1,6 +1,6 @@
 package com.gm2.pdv.pdv.service;
 
-import com.gm2.pdv.pdv.dto.ProductDTO;
+import com.gm2.pdv.pdv.dto.ProductSaleDTO;
 import com.gm2.pdv.pdv.dto.ProductinfoDTO;
 import com.gm2.pdv.pdv.dto.SaleDTO;
 import com.gm2.pdv.pdv.dto.SaleinfoDTO;
@@ -20,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
@@ -70,11 +71,27 @@ public class SaleService {
     }
 
     private SaleinfoDTO getSaleInfo(Sale sale) {
+
+        var products =  getProductInFor(sale.getItems());
+        BigDecimal total = getTotal(products);
+        
         return SaleinfoDTO.builder()
                 .user(sale.getUser().getName())
                 .date(sale.getDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")))
-                .products(getProductInFor(sale.getItems()))
+                .products(products)
+                .total(total)
                 .build();
+    }
+
+    private BigDecimal getTotal(List<ProductinfoDTO> products) {
+        BigDecimal total = new BigDecimal(0);
+        for (int i = 0; i < products.size(); i++) {
+            ProductinfoDTO currentProduct = products.get(i);
+            total = total.add(currentProduct.getPrice().multiply(new BigDecimal(currentProduct.getQuantity())));
+
+        }
+
+        return total;
     }
 
     public List<ProductinfoDTO> getProductInFor(List<ItemSale> items) {
@@ -91,7 +108,7 @@ public class SaleService {
         ).collect(Collectors.toList());
     }
 
-    private List<ItemSale> getItemSale(List<ProductDTO> products) throws Exception {
+    private List<ItemSale> getItemSale(List<ProductSaleDTO> products) throws Exception {
         return products.stream().map(item -> {
             Product product = productRepository.findById(item.getProductid())
                     .orElseThrow(() -> new NoItemException("Item da venda não encontrado"));

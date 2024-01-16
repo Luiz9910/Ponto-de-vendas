@@ -1,8 +1,7 @@
 package com.gm2.pdv.pdv.controller;
 
 import com.gm2.pdv.pdv.dto.ResponseDTO;
-import com.gm2.pdv.pdv.dto.SaleDTO;
-import com.gm2.pdv.pdv.dto.SaleinfoDTO;
+import com.gm2.pdv.pdv.dto.Sale.SaleDTO;
 import com.gm2.pdv.pdv.exceptions.InvalidOperationInvalidException;
 import com.gm2.pdv.pdv.exceptions.NoItemException;
 import com.gm2.pdv.pdv.exceptions.NotFoundUserException;
@@ -11,8 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/sale")

@@ -1,13 +1,13 @@
 package com.gm2.pdv.pdv.controller;
 
 import com.gm2.pdv.pdv.dto.ResponseDTO;
-import com.gm2.pdv.pdv.dto.UserDTO;
+import com.gm2.pdv.pdv.dto.User.UserDTO;
+import com.gm2.pdv.pdv.dto.User.UserResponseDTO;
+import com.gm2.pdv.pdv.exceptions.InvalidOperationInvalidException;
 import com.gm2.pdv.pdv.exceptions.NotFoundUserException;
-import com.gm2.pdv.pdv.model.User;
 import com.gm2.pdv.pdv.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -23,7 +23,7 @@ public class UseController {
     private UserService userService;
 
     @GetMapping
-    public ResponseEntity<List<UserDTO>> getAll() {
+    public ResponseEntity<List<UserResponseDTO>> getAll() {
         return new ResponseEntity<>(userService.getAllUser(), HttpStatus.OK);
     }
 
@@ -31,7 +31,9 @@ public class UseController {
     public ResponseEntity create(@Valid @RequestBody UserDTO user) {
         try {
             return new ResponseEntity<>(userService.save(user), HttpStatus.CREATED);
-        } catch (Exception error){
+        } catch (InvalidOperationInvalidException error) {
+            return new ResponseEntity<>(new ResponseDTO(error.getMessage()), HttpStatus.BAD_REQUEST);
+        }catch (Exception error){
             return new ResponseEntity<>(new ResponseDTO(error.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

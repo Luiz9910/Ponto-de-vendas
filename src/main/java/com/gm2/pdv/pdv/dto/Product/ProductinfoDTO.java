@@ -1,4 +1,4 @@
-package com.gm2.pdv.pdv.dto;
+package com.gm2.pdv.pdv.dto.Product;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

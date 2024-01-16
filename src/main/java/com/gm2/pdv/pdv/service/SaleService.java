@@ -1,9 +1,9 @@
 package com.gm2.pdv.pdv.service;
 
-import com.gm2.pdv.pdv.dto.ProductSaleDTO;
-import com.gm2.pdv.pdv.dto.ProductinfoDTO;
-import com.gm2.pdv.pdv.dto.SaleDTO;
-import com.gm2.pdv.pdv.dto.SaleinfoDTO;
+import com.gm2.pdv.pdv.dto.Product.ProductSaleDTO;
+import com.gm2.pdv.pdv.dto.Product.ProductinfoDTO;
+import com.gm2.pdv.pdv.dto.Sale.SaleDTO;
+import com.gm2.pdv.pdv.dto.Sale.SaleinfoDTO;
 import com.gm2.pdv.pdv.exceptions.InvalidOperationInvalidException;
 import com.gm2.pdv.pdv.exceptions.NoItemException;
 import com.gm2.pdv.pdv.exceptions.NotFoundUserException;
@@ -87,7 +87,8 @@ public class SaleService {
         BigDecimal total = new BigDecimal(0);
         for (int i = 0; i < products.size(); i++) {
             ProductinfoDTO currentProduct = products.get(i);
-            total = total.add(currentProduct.getPrice().multiply(new BigDecimal(currentProduct.getQuantity())));
+            total = total.add(currentProduct.getPrice()
+                    .multiply(new BigDecimal(currentProduct.getQuantity())));
 
         }
 
@@ -103,6 +104,7 @@ public class SaleService {
                 item -> ProductinfoDTO.builder()
                      .id(item.getId())
                      .description(item.getProduct().getDescription())
+                        .price(item.getProduct().getPrice())
                      .quantity((int) item.getQuantity())
                      .build()
         ).collect(Collectors.toList());

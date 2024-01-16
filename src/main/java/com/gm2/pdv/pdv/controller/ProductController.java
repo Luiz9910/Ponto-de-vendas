@@ -1,11 +1,11 @@
 package com.gm2.pdv.pdv.controller;
 
-import com.gm2.pdv.pdv.dto.ProductDTO;
+import com.gm2.pdv.pdv.dto.Product.ProductDTO;
 import com.gm2.pdv.pdv.dto.ResponseDTO;
 import com.gm2.pdv.pdv.exceptions.NotFoundUserException;
 import com.gm2.pdv.pdv.model.Product;
-import com.gm2.pdv.pdv.model.User;
 import com.gm2.pdv.pdv.repository.ProductRepository;
+
 import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;

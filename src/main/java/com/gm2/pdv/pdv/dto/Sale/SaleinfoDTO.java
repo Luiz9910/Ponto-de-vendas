@@ -1,5 +1,6 @@
-package com.gm2.pdv.pdv.dto;
+package com.gm2.pdv.pdv.dto.Sale;
 
+import com.gm2.pdv.pdv.dto.Product.ProductinfoDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
